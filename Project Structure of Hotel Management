@@ -1,1 +1,46 @@
+HotelManagementSystem/
+├── src/
+│   └── com/
+│       └── hotelmanagement/
+│           ├── model/
+│           │   ├── Customer.java
+│           │   ├── Room.java
+│           │   ├── Reservation.java
+│           │   ├── Payment.java
+│           │   └── Hotel.java
+│           ├── controller/
+│           │   └── MainController.java
+│           ├── service/
+│           │   ├── HotelService.java
+│           │   ├── CustomerService.java
+│           │   └── ReservationService.java
+│           ├── dao/
+│           │   ├── RoomDAO.java
+│           │   ├── CustomerDAO.java
+│           │   ├── ReservationDAO.java
+│           │   └── PaymentDAO.java
+│           ├── ui/
+│           │   ├── MainUI.java
+│           │   └── CustomerUI.java
+│           ├── exception/
+│           │   └── CustomException.java
+│           └── utils/
+│               └── DatabaseConnection.java
+├── resources/
+│   ├── config.properties
+│   └── images/
+│       ├── logo.png
+│       └── room_images/
+├── lib/
+│   ├── jdbc-driver.jar
+│   └── external-library.jar
+├── test/
+│   └── com/
+│       └── hotelmanagement/
+│           ├── HotelServiceTest.java
+│           └── CustomerServiceTest.java
+├── docs/
+│   ├── project_report.pdf
+│   └── user_manual.pdf
+└── pom.xml / build.gradle
 
