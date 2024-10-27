@@ -1,0 +1,251 @@
+//  CustomerDAO.
+// CustomerDAO.java
+package com.hotelmanagement.dao;
+
+import com.hotelmanagement.model.Customer;
+import com.hotelmanagement.util.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CustomerDAO {
+
+    public void addCustomer(Customer customer) {
+        String query = "INSERT INTO customers (name, email, phone, address) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, customer.getName());
+            statement.setString(2, customer.getEmail());
+            statement.setString(3, customer.getPhone());
+            statement.setString(4, customer.getAddress());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Customer getCustomer(int customerId) {
+        Customer customer = null;
+        String query = "SELECT * FROM customers WHERE customer_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, customerId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                customer = new Customer();
+                customer.setCustomerId(resultSet.getInt("customer_id"));
+                customer.setName(resultSet.getString("name"));
+                customer.setEmail(resultSet.getString("email"));
+                customer.setPhone(resultSet.getString("phone"));
+                customer.setAddress(resultSet.getString("address"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
+
+    public List<Customer> getAllCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        String query = "SELECT * FROM customers";
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
+                Customer customer = new Customer();
+                customer.setCustomerId(resultSet.getInt("customer_id"));
+                customer.setName(resultSet.getString("name"));
+                customer.setEmail(resultSet.getString("email"));
+                customer.setPhone(resultSet.getString("phone"));
+                customer.setAddress(resultSet.getString("address"));
+                customers.add(customer);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    public void updateCustomer(Customer customer) {
+        String query = "UPDATE customers SET name = ?, email = ?, phone = ?, address = ? WHERE customer_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, customer.getName());
+            statement.setString(2, customer.getEmail());
+            statement.setString(3, customer.getPhone());
+            statement.setString(4, customer.getAddress());
+            statement.setInt(5, customer.getCustomerId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCustomer(int customerId) {
+        String query = "DELETE FROM customers WHERE customer_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, customerId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+// RoomDAO.
+// RoomDAO.java
+package com.hotelmanagement.dao;
+
+import com.hotelmanagement.model.Room;
+import com.hotelmanagement.util.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RoomDAO {
+
+    public void addRoom(Room room) {
+        String query = "INSERT INTO rooms (room_number, room_type_id, price, status) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, room.getRoomNumber());
+            statement.setInt(2, room.getRoomTypeId());
+            statement.setBigDecimal(3, room.getPrice());
+            statement.setString(4, room.getStatus());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Room getRoom(int roomId) {
+        Room room = null;
+        String query = "SELECT * FROM rooms WHERE room_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, roomId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                room = new Room();
+                room.setRoomId(resultSet.getInt("room_id"));
+                room.setRoomNumber(resultSet.getString("room_number"));
+                room.setRoomTypeId(resultSet.getInt("room_type_id"));
+                room.setPrice(resultSet.getBigDecimal("price"));
+                room.setStatus(resultSet.getString("status"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return room;
+    }
+
+    public List<Room> getAllRooms() {
+        List<Room> rooms = new ArrayList<>();
+        String query = "SELECT * FROM rooms";
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
+                Room room = new Room();
+                room.setRoomId(resultSet.getInt("room_id"));
+                room.setRoomNumber(resultSet.getString("room_number"));
+                room.setRoomTypeId(resultSet.getInt("room_type_id"));
+                room.setPrice(resultSet.getBigDecimal("price"));
+                room.setStatus(resultSet.getString("status"));
+                rooms.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rooms;
+    }
+
+    public void updateRoom(Room room) {
+        String query = "UPDATE rooms SET room_number = ?, room_type_id = ?, price = ?, status = ? WHERE room_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, room.getRoomNumber());
+            statement.setInt(2, room.getRoomTypeId());
+            statement.setBigDecimal(3, room.getPrice());
+            statement.setString(4, room.getStatus());
+            statement.setInt(5, room.getRoomId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteRoom(int roomId) {
+        String query = "DELETE FROM rooms WHERE room_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, roomId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+// ReservationDAO.
+// ReservationDAO.java
+package com.hotelmanagement.dao;
+
+import com.hotelmanagement.model.Reservation;
+import com.hotelmanagement.util.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReservationDAO {
+
+    public void addReservation(Reservation reservation) {
+        String query = "INSERT INTO reservations (customer_id, room_id, check_in_date, check_out_date, status) VALUES (?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, reservation.getCustomerId());
+            statement.setInt(2, reservation.getRoomId());
+            statement.setDate(3, Date.valueOf(reservation.getCheckInDate()));
+            statement.setDate(4, Date.valueOf(reservation.getCheckOutDate()));
+            statement.setString(5, reservation.getStatus());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Reservation getReservation(int reservationId) {
+        Reservation reservation = null;
+        String query = "SELECT * FROM reservations WHERE reservation_id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, reservationId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                reservation = new Reservation();
+                reservation.setReservationId(resultSet.getInt("reservation_id"));
+                reservation.setCustomerId(resultSet.getInt("customer_id"));
+                reservation.setRoomId(resultSet.getInt("room_id"));
+                reservation.setCheckInDate(resultSet.getDate("check_in_date").toLocalDate());
+                reservation.setCheckOutDate(resultSet.getDate("check_out_date").toLocalDate());
+                reservation.setStatus(resultSet.getString("status"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservation;
+    }
+
+    public List<Reservation> getAllReservations() {
+        List<Reservation> reservations = new ArrayList<>();
+        String query = "SELECT * FROM reservations";
+        try (Connection connection = DatabaseConnection.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            while (resultSet.next()) {
+                Reservation reservation = new Reservation();
+                reservation.setReservationId(resultSet.getInt("reservation_id"));
+                reservation.setCustomerId(resultSet.getInt("customer_id"));
+                reservation.setRoomId
