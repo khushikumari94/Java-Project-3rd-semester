@@ -9,289 +9,277 @@ Creating HTML templates for a user management system for a hotel management proj
 
 1. Login Page (login.html)
 
-     <!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Hotel Management</title>
+    <title>Hotel Management - Login</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="login-container">
-        <h2>Hotel Management Login</h2>
-        <form action="dashboard.html" method="POST">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+        <h2>Hotel Management System - Login</h2>
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
             <button type="submit">Login</button>
         </form>
+        <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
 </body>
 </html>
+                        2. Registration Page (register.html)
 
-2. Dashboard Page (dashboard.html)
-
-       <!DOCTYPE html>
+                             <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Hotel Management</title>
+    <title>Hotel Management - Register</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <h1>Welcome to Hotel Management Dashboard</h1>
-        <nav>
-            <ul>
-                <li><a href="user-list.html">User Management</a></li>
-                <li><a href="rooms.html">Room Management</a></li>
-                <li><a href="bookings.html">Booking Management</a></li>
-            </ul>
-        </nav>
+    <div class="register-container">
+        <h2>Create a New Account</h2>
+        <form action="/register" method="POST">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
 </body>
 </html>
+                              3. User Profile Page (profile.html)
 
-
-
-        3. User List Page (user-list.html)
-
-         <!DOCTYPE html>
+                                      <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - Hotel</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="user-list-container">
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+        <form action="/updateProfile" method="POST">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" value="John Doe" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="johndoe@example.com" required>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="johnDoe123" required>
+
+            <button type="submit">Update Profile</button>
+        </form>
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </div>
+</body>
+</html>
+                            4. Admin User Management Page (admin-users.html)
+                                This template will be used by the hotel management admin to view, update, and delete user accounts.
+
+                                        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
         <h2>User Management</h2>
-        <a href="add-user.html">Add New User</a>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Username</th>
+                    <th>User ID</th>
+                    <th>Full Name</th>
                     <th>Email</th>
-                    <th>Role</th>
-                    <th>Actions</th>
+                    <th>Username</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Example of dynamic user data -->
                 <tr>
                     <td>1</td>
-                    <td>admin</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
+                    <td>John Doe</td>
+                    <td>johndoe@example.com</td>
+                    <td>johnDoe123</td>
                     <td>
-                        <a href="edit-user.html?id=1">Edit</a> | 
-                        <a href="#">Delete</a>
+                        <button onclick="window.location.href='/editUser/1'">Edit</button>
+                        <button onclick="window.location.href='/deleteUser/1'">Delete</button>
                     </td>
                 </tr>
-                <!-- More users can be listed here -->
+                <!-- More users can be added dynamically here -->
             </tbody>
         </table>
+        <button onclick="window.location.href='/addUser'">Add New User</button>
     </div>
 </body>
 </html>
 
 
-          4. Add User Page (add-user.html)
+                                   5. Add User Page (add-user.html)
 
-               <!DOCTYPE html>
+
+                                        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User - Hotel Management</title>
+    <title>Add New User</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="add-user-container">
         <h2>Add New User</h2>
-        <form action="user-list.html" method="POST">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="input-group">
-                <label for="role">Role</label>
-                <select id="role" name="role" required>
-                    <option value="admin">Admin</option>
-                    <option value="guest">Guest</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+        <form action="/addUser" method="POST">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+
             <button type="submit">Add User</button>
         </form>
     </div>
 </body>
 </html>
+                                           6. CSS (styles.css)
+                                              To make the pages look clean and user-friendly, you can use some basic CSS styling.
 
-
-
-         5. Edit User Page (edit-user.html)
-
-            <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User - Hotel Management</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="edit-user-container">
-        <h2>Edit User</h2>
-        <form action="user-list.html" method="POST">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="admin" required>
-            </div>
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="admin@example.com" required>
-            </div>
-            <div class="input-group">
-                <label for="role">Role</label>
-                <select id="role" name="role" required>
-                    <option value="admin">Admin</option>
-                    <option value="guest">Guest</option>
-                </select>
-            </div>
-            <button type="submit">Update User</button>
-        </form>
-    </div>
-</body>
-</html>
-
-
-
-          6. Room Management Page (rooms.html)
-
-              <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Management - Hotel</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="rooms-container">
-        <h2>Manage Hotel Rooms</h2>
-        <a href="add-room.html">Add New Room</a>
-        <table>
-            <thead>
-                <tr>
-                    <th>Room Number</th>
-                    <th>Type</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>101</td>
-                    <td>Deluxe</td>
-                    <td>$150</td>
-                    <td>Available</td>
-                    <td>
-                        <a href="edit-room.html?id=101">Edit</a> | 
-                        <a href="#">Delete</a>
-                    </td>
-                </tr>
-                <!-- More rooms can be listed here -->
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
-
-
-         Common Styles (styles.css)
-
-             body {
+                                                body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
 
-h1, h2 {
+h2 {
     text-align: center;
-    margin-bottom: 20px;
+    color: #333;
 }
 
-.container {
-    width: 80%;
-    margin: auto;
+form {
+    width: 50%;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.input-group {
-    margin: 10px 0;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-}
-
-input, select {
+input, select, button {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 
 button {
-    padding: 10px 15px;
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #45a049;
+}
+
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 table {
-    width: 100%;
+    width: 80%;
+    margin: 20px auto;
     border-collapse: collapse;
-}
-
-table, th, td {
     border: 1px solid #ddd;
 }
 
 th, td {
     padding: 10px;
     text-align: center;
+    border: 1px solid #ddd;
 }
 
+th {
+    background-color: #f2f2f2;
+}
 
-            
+button {
+    margin: 5px;
+}
+                                     Java Backend (Spring Boot Example)
+The HTML templates above can be served by a Java backend such as Spring Boot. You can use Thymeleaf as a template engine to dynamically inject content into the HTML files (like user information and actions). You will also need controllers in Java to handle user actions like login, registration, and user management.
 
+For example:
+       @Controller
+public class UserController {
 
-          
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";  // Login page will be rendered
+    }
 
-        
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password) {
+        // Validate credentials and redirect to user dashboard
+        return "redirect:/dashboard";
+    }
 
-     
-   
-      
+    @GetMapping("/register")
+    public String registerPage() {
+        return "register";  // Registration page will be rendered
+    }
+
+    @PostMapping("/register")
+    public String register(@RequestParam String username, @RequestParam String password) {
+        // Register user and redirect
+        return "redirect:/login";
+    }
+
+    // Similar methods for profile, user management, etc.
+}
+
