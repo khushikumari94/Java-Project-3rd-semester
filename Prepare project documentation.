@@ -1,0 +1,217 @@
+Hotel Management Project Documentation
+
+1. Introduction
+
+1.1 Project Overview
+The Hotel Management System is a software application designed to handle various 
+operations in a hotel such as booking rooms, managing guest check-ins and check-outs,
+handling room availability, and processing payments. It is developed using Java 
+programming language, along with other necessary tools and libraries to ensure functionality,
+security, and smooth operation.
+
+This system enables the hotel staff to easily manage the day-to-day operations 
+and provides an efficient interface for users to book rooms.
+
+1.2 Objective
+The objective of this project is to develop a system that automates the processes
+of managing guest information, room bookings, payments, check-ins, check-outs,
+and inventory of rooms. This will improve the efficiency and accuracy of hotel management.
+
+
+2. System Requirements
+2.1 Functional Requirements
+1-User Authentication:
+
+Admin and Guest login.
+Admin privileges for managing rooms and user details.
+Guest access to book and view room details.
+
+2-Room Management:
+
+Admin can add, update, or delete room details.
+Admin can set room availability status (Available, Occupied).
+Admin can view room details such as type, rate, and amenities.
+
+
+3-Booking and Reservation:
+
+Guests can view available rooms and book them.
+Display room prices, type, and facilities.
+Confirmation of reservation with details such as room number, dates, and cost.
+
+4-Guest Management:
+
+Admin can view guest details.
+Admin can check-in/check-out guests.
+Store and update guest personal details.
+
+5-Billing and Payments:
+
+Generate bills for guests based on room rates and additional services.
+Handle payments and track payment status (Paid/Pending).
+
+6-Reports and Analytics:
+
+Generate reports on bookings, available rooms, and revenue.
+2.2 Non-Functional Requirements
+
+1-Performance:
+
+The system should be able to handle multiple user requests simultaneously without performance degradation.
+
+2-Security:
+
+User data and passwords should be securely stored and encrypted.
+The system should only allow access to authorized users based on roles.
+
+3-Scalability:
+
+The system should be able to handle future increases in the number of rooms or guests.
+4-Usability:
+
+The user interface should be intuitive and easy to use for both admins and guests.
+5-Reliability:
+
+The system should be robust and recover from crashes without data loss.
+
+3. Architecture
+3.1 System Architecture
+The architecture follows a modular approach with different components interacting with each other:
+
+User Interface (UI): A graphical interface for admin and guest users, developed using JavaFX or Swing.
+Business Logic Layer: Handles operations such as room booking, guest management, payment processing, and report generation.
+Data Layer: Interacts with a database (e.g., MySQL, SQLite) to store and retrieve data like room availability, bookings, and guest details.
+
+
+3.2 Class Diagram
+Below is a simplified class diagram that represents the core classes:
+
++---------------------+       +-------------------+       +---------------------+
+|      Room           |<----->|     Booking       |<----->|       Guest         |
++---------------------+       +-------------------+       +---------------------+
+| - roomNumber        |       | - bookingId       |       | - guestId           |
+| - type              |       | - checkInDate     |       | - name              |
+| - price             |       | - checkOutDate    |       | - contactDetails    |
+| - availability      |       | - paymentStatus   |       | - address           |
++---------------------+       +-------------------+       +---------------------+
+       ^                           |                            ^
+       |                           v                            |
++----------------------+      +---------------------+    +------------------------+
+|      Admin           |      |    Payment          |    |   RoomService          |
++----------------------+      +---------------------+    +------------------------+
+| - adminId            |      | - paymentId         |    | - serviceId            |
+| - username           |      | - amount            |    | - serviceName          |
+| - password           |      | - paymentDate       |    | - price                |
++----------------------+      | - status            |    +------------------------+
+                              +---------------------+
+
+
+4. Tools and Technologies
+
+1-Programming Language:
+
+Java 8 or higher.
+2-Database:
+
+MySQL or SQLite for storing room details, guest information, and bookings.
+3-User Interface:
+
+JavaFX or Swing for creating a graphical user interface (GUI).
+4-Libraries/Frameworks:
+
+JDBC (Java Database Connectivity) for interacting with the database.
+JUnit for testing the application.
+Log4j for logging.
+5-Development Environment:
+
+IDE: IntelliJ IDEA or Eclipse.
+Database Management: MySQL Workbench or SQLite Studio.
+
+
+5. Database Design
+5.1 Tables
+Rooms Table
+
+Column Name	Data Type	Description
+room_id	INT	Primary Key, Unique identifier
+room_number	VARCHAR	Room number
+room_type	VARCHAR	Type of room (e.g., Single, Suite)
+price	DECIMAL	Price per night
+availability	BOOLEAN	Availability status (TRUE/FALSE)
+
+
+Guests Table
+Column Name	Data Type	Description
+guest_id	INT	Primary Key, Unique identifier
+name	VARCHAR	Full name of the guest
+contact_details	VARCHAR	Contact info (Phone/Email)
+address	VARCHAR	Address of the guest
+
+
+
+Bookings Table
+Column Name	Data Type	Description
+booking_id	INT	Primary Key, Unique identifier
+guest_id	INT	Foreign Key, references Guests
+room_id	INT	Foreign Key, references Rooms
+check_in_date	DATE	Check-in date
+check_out_date	DATE	Check-out date
+payment_status	VARCHAR	Payment status (Paid/Pending)
+
+
+
+Payments Table
+Column Name	Data Type	Description
+payment_id	INT	Primary Key, Unique identifier
+booking_id	INT	Foreign Key, references Bookings
+amount	DECIMAL	Total amount
+payment_date	DATE	Date of payment
+status	VARCHAR	Status (Success/Failed)
+
+
+
+6. Implementation Details
+6.1 Admin Operations
+Login: Admin can log into the system with a secure username and password.
+Room Management: Admin can add, delete, or modify rooms using the Room class.
+Booking Management: Admin can view current bookings and check-in/check-out guests.
+Report Generation: Admin can generate reports such as the number of rooms booked and the total revenue.
+
+
+6.2 Guest Operations
+Room Booking: Guests can view available rooms and make bookings.
+View Booking Details: After booking, guests can check the status and details of their reservation.
+Payment Processing: Guests can pay for their stay using the Payment class.
+
+
+
+7. Testing
+7.1 Unit Testing
+Unit testing will be done using JUnit to test individual methods and components such as booking functionality, guest registration, and payment calculation.
+
+7.2 Integration Testing
+Integration testing ensures that all components (UI, business logic, and database) work together seamlessly.
+
+7.3 User Acceptance Testing
+User Acceptance Testing (UAT) will involve real users testing the system to ensure it meets their requirements.
+
+
+
+8. Conclusion
+This Hotel Management System in Java aims to automate essential processes in hotel operations, 
+offering a robust and scalable solution. By integrating features like room management, booking,
+payment, and reporting, the system enhances operational efficiency while providing a smooth user experience.
+
+This documentation provides a comprehensive overview of the project, its objectives, architecture, and implementation. With the system, hotels can streamline their operations and offer a better service to their customers.
+
+
+
+
+
+
+
+
+
+
+
+
