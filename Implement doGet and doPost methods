@@ -1,0 +1,142 @@
+To implement doGet and doPost methods for a hotel management project in Java, 
+you typically use a servlet to handle HTTP requests and responses. Below is a 
+simple example of how to implement these methods in a servlet, assuming you are building
+a hotel management system where you want to display hotel room details on a GET 
+request and allow users to make bookings (through POST).
+
+Example Servlet: HotelManagementServlet.java
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+import java.util.*;
+
+public class HotelManagementServlet extends HttpServlet {
+
+    // For simplicity, we store hotel data (rooms and bookings) in memory.
+    // In a real application, this should be stored in a database.
+    private Map<Integer, String> rooms = new HashMap<>();
+    private List<String> bookings = new ArrayList<>();
+
+    @Override
+    public void init() throws ServletException {
+        // Initialize some hotel room data.
+        rooms.put(101, "Single Room - $100 per night");
+        rooms.put(102, "Double Room - $150 per night");
+        rooms.put(103, "Suite - $250 per night");
+    }
+
+    // Handle GET requests (e.g., displaying available rooms)
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+
+        // Print available rooms
+        PrintWriter out = response.getWriter();
+        out.println("<html><body>");
+        out.println("<h1>Hotel Room List</h1>");
+        out.println("<table border='1'><tr><th>Room Number</th><th>Room Details</th></tr>");
+
+        for (Map.Entry<Integer, String> room : rooms.entrySet()) {
+            out.println("<tr><td>" + room.getKey() + "</td><td>" + room.getValue() + "</td></tr>");
+        }
+        
+        out.println("</table>");
+        out.println("<h2>Make a Booking</h2>");
+        out.println("<form method='POST'>");
+        out.println("<label for='roomNumber'>Enter Room Number to Book:</label>");
+        out.println("<input type='text' id='roomNumber' name='roomNumber' required>");
+        out.println("<button type='submit'>Book Room</button>");
+        out.println("</form>");
+        out.println("</body></html>");
+    }
+
+    // Handle POST requests (e.g., booking a room)
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String roomNumberStr = request.getParameter("roomNumber");
+        PrintWriter out = response.getWriter();
+        response.setContentType("text/html");
+
+        if (roomNumberStr != null && !roomNumberStr.isEmpty()) {
+            try {
+                int roomNumber = Integer.parseInt(roomNumberStr);
+                if (rooms.containsKey(roomNumber)) {
+                    // Room booking successful
+                    bookings.add("Room " + roomNumber + " booked.");
+                    out.println("<html><body>");
+                    out.println("<h1>Booking Confirmation</h1>");
+                    out.println("<p>Room " + roomNumber + " has been successfully booked!</p>");
+                    out.println("<a href=''>Back to room list</a>");
+                    out.println("</body></html>");
+                } else {
+                    // Room number invalid
+                    out.println("<html><body>");
+                    out.println("<h1>Error</h1>");
+                    out.println("<p>Sorry, room number " + roomNumber + " is not available.</p>");
+                    out.println("<a href=''>Back to room list</a>");
+                    out.println("</body></html>");
+                }
+            } catch (NumberFormatException e) {
+                // Invalid room number format
+                out.println("<html><body>");
+                out.println("<h1>Error</h1>");
+                out.println("<p>Invalid room number format. Please enter a valid number.</p>");
+                out.println("<a href=''>Back to room list</a>");
+                out.println("</body></html>");
+            }
+        } else {
+            out.println("<html><body>");
+            out.println("<h1>Error</h1>");
+            out.println("<p>Please provide a room number to book.</p>");
+            out.println("<a href=''>Back to room list</a>");
+            out.println("</body></html>");
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup resources, if needed.
+    }
+}
+
+Key Points:
+doGet Method:
+
+1-This method is responsible for handling GET requests. It displays a list of available rooms.
+2-It retrieves the available rooms (in this case, stored in the rooms map) and presents them in an HTML table format.
+3-A simple form is included where the user can enter the room number to make a booking.
+
+doPost Method:
+
+1-This method handles POST requests. When the user submits the booking form (with a room number), the doPost method is triggered.
+2-It checks whether the room number entered by the user exists in the rooms map.
+3-If the room number exists, it confirms the booking; otherwise, it displays an error message.
+
+
+Servlet Configuration in web.xml (Optional if using annotation-based configuration):
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+    <servlet>
+        <servlet-name>HotelManagementServlet</servlet-name>
+        <servlet-class>HotelManagementServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HotelManagementServlet</servlet-name>
+        <url-pattern>/hotel</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+Servlet Mapping (Optional, for annotations-based configuration):
+If you're using servlet annotations (since Servlet 3.0), you can replace the web.xml configuration with:
+
+@WebServlet("/hotel")
+public class HotelManagementServlet extends HttpServlet {
+    // your servlet code here
+}
+
+Conclusion:
+In this simple example, the doGet method retrieves and displays hotel room data to the user, and
+the doPost method handles the booking logic by checking whether the room exists and confirming the booking. 
+You can extend this functionality 
+with more sophisticated features like user authentication, room availability checks, and database integration.
