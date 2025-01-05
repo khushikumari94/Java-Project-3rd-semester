@@ -1,0 +1,238 @@
+Using JSTL (JavaServer Pages Standard Tag Library) and EL (Expression Language) in JSP pages allows for a 
+more dynamic and efficient way to work with data. These technologies make it easier to process and display 
+data from a Servlet, JavaBeans, or request parameters in a readable and concise manner without writing Java code inside the JSP page.
+
+Below, I will guide you through an example where we use JSTL tags and EL to display user data on a JSP page.
+1. Setup of Dependencies (JSTL and EL)
+If you are using Maven, you can add the following dependency for JSTL:
+
+<dependency>
+    <groupId>javax.servlet.jsp.jstl</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+Otherwise, you can manually include the following JARs in your WEB-INF/lib directory:
+
+jstl-1.2.jar
+standard-1.1.2.jar
+
+
+Using JSTL (JavaServer Pages Standard Tag Library) and EL (Expression Language) in JSP pages allows for a more dynamic and efficient way to work with data. These technologies make it easier to process and display data from a Servlet, JavaBeans, or request parameters in a readable and concise manner without writing Java code inside the JSP page.
+
+Below, I will guide you through an example where we use JSTL tags and EL to display user data on a JSP page.
+
+1. Setup of Dependencies (JSTL and EL)
+If you are using Maven, you can add the following dependency for JSTL:
+
+xml
+Copy code
+<dependency>
+    <groupId>javax.servlet.jsp.jstl</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+Otherwise, you can manually include the following JARs in your WEB-INF/lib directory:
+
+jstl-1.2.jar
+standard-1.1.2.jar
+2. Example Structure
+Let's assume a simple structure of a Hotel Management System where user data will be fetched and displayed using JSTL and EL.
+
+HotelManagementApp
+├── src
+│   ├── com.hotelmanagement
+│   │   ├── UserServlet.java
+│   │   ├── User.java
+│   │   └── UserManager.java
+├── WebContent
+│   ├── userList.jsp
+│   ├── WEB-INF
+│   └── web.xml
+└── lib
+    └── jstl-1.2.jar
+    └── standard-1.1.2.jar
+
+3. Create the User Model Class
+This class represents a user.
+
+package com.hotelmanagement;
+
+public class User {
+    private int id;
+    private String name;
+    private String email;
+    private int age;
+
+    // Constructor
+    public User(int id, String name, String email, int age) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+
+
+4. Create the UserManager Class
+This class will manage user data (you can think of it as simulating a database interaction).
+
+package com.hotelmanagement;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserManager {
+    // Method to return a list of dummy users
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        users.add(new User(1, "John Doe", "john.doe@example.com", 30));
+        users.add(new User(2, "Jane Smith", "jane.smith@example.com", 25));
+        users.add(new User(3, "Alice Johnson", "alice.johnson@example.com", 28));
+        return users;
+    }
+}
+
+
+5. Create the UserServlet Class
+This Servlet handles the request, fetches data from the UserManager, and forwards it to the JSP page.
+
+package com.hotelmanagement;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.List;
+
+public class UserServlet extends HttpServlet {
+    
+    private UserManager userManager;
+
+    public void init() {
+        userManager = new UserManager(); // Initialize the user manager
+    }
+
+    // Handle GET request to fetch and display user data
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<User> users = userManager.getAllUsers(); // Fetch all users
+        request.setAttribute("users", users); // Set users as request attribute
+
+        // Forward request to userList.jsp for rendering
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/userList.jsp");
+        dispatcher.forward(request, response);
+    }
+}
+
+
+6. Create the userList.jsp Page with JSTL and EL
+Now, let's use JSTL tags and Expression Language (EL) to display the user data in the userList.jsp page.
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>User List</title>
+</head>
+<body>
+    <h1>List of Users</h1>
+
+    <!-- Check if there are users -->
+    <c:if test="${not empty users}">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterate over the users list -->
+                <c:forEach var="user" items="${users}">
+                    <tr>
+                        <td>${user.id}</td> <!-- Display user ID -->
+                        <td>${user.name}</td> <!-- Display user Name -->
+                        <td>${user.email}</td> <!-- Display user Email -->
+                        <td>${user.age}</td> <!-- Display user Age -->
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+
+    <!-- Display a message if no users -->
+    <c:if test="${empty users}">
+        <p>No users found.</p>
+    </c:if>
+</body>
+</html>
+
+
+Explanation of JSTL and EL Used:
+1-JSTL Core Tag Library (<c:forEach>, <c:if>):
+
+<c:forEach> is used to iterate over the users list and display each user's details in a table row.
+<c:if> is used to conditionally display content. In this case, if the users list is empty, we show a message indicating no users are available.
+
+2-EL (Expression Language):
+
+${users} is used to access the list of users that was set as a request attribute in the Servlet.
+${user.id}, ${user.name}, ${user.email}, and ${user.age} are used to access the properties of each User object in the list.
+
+7. Configure the web.xml File
+Map the UserServlet to the /UserServlet URL.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <servlet>
+        <servlet-name>userServlet</servlet-name>
+        <servlet-class>com.hotelmanagement.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>userServlet</servlet-name>
+        <url-pattern>/UserServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+8. Run the Application
+1-Compile the Java classes.
+2-Deploy the project to a servlet container like Tomcat.
+3-Run the application by accessing the UserServlet at the following URL:
+
+http://localhost:8080/HotelManagementApp/UserServlet
+
+You should see a list of users displayed in an HTML table. If there are no users, the message "No users found" will appear.
+
+Conclusion
+In this example, JSTL and EL are used to:
+
+1-Dynamically display a list of users in an HTML table.
+2-Use EL expressions to access data passed from the Servlet (e.g., users list) and properties of JavaBeans (e.g., user.id, user.name, etc.).
+3-Conditionally display content (e.g., show a message if no users exist).
+4-Using JSTL and EL significantly improves the readability, maintainability, and performance of your JSP pages by eliminating Java code from the page itself and using tags for common operations like iteration and conditionals.
+
+
+Using JSTL and EL significantly improves the readability, maintainability, and performance of your JSP pages by eliminating Java 
+code from the page itself and using tags for common operations like iteration and conditionals.
+
+
+
