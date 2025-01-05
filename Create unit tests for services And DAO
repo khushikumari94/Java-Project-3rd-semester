@@ -1,0 +1,265 @@
+Creating unit tests for services and DAO (Data Access Object) in a Hotel Management project using Java
+typically involves several steps. These tests will validate the correctness of your application's logic 
+and ensure data is correctly being manipulated and stored/retrieved.
+
+Let's break down the unit testing for both services and DAOs.
+
+Tools and Libraries
+1-JUnit: For writing and running the unit tests.
+2-Mockito: For mocking dependencies such as DAOs or external service calls.
+3-Spring Test (if using Spring Framework): For testing service layer, especially when dealing with databases.
+4-H2 Database or In-memory database (optional for DAO testing): To avoid testing with real databases.
+
+Example Scenario:
+Let's assume you have a basic hotel management system with services like RoomService and DAOs like RoomDAO.
+
+Example Class: RoomService
+
+public class RoomService {
+    private final RoomDAO roomDAO;
+
+    public RoomService(RoomDAO roomDAO) {
+        this.roomDAO = roomDAO;
+    }
+
+    public boolean bookRoom(int roomId) {
+        Room room = roomDAO.findById(roomId);
+        if (room != null && !room.isBooked()) {
+            room.setBooked(true);
+            roomDAO.update(room);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean cancelBooking(int roomId) {
+        Room room = roomDAO.findById(roomId);
+        if (room != null && room.isBooked()) {
+            room.setBooked(false);
+            roomDAO.update(room);
+            return true;
+        }
+        return false;
+    }
+
+    public Room getRoomDetails(int roomId) {
+        return roomDAO.findById(roomId);
+    }
+}
+
+Example Class: RoomDAO
+
+public class RoomDAO {
+    private final EntityManager entityManager;
+
+    public RoomDAO(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    public Room findById(int roomId) {
+        return entityManager.find(Room.class, roomId);
+    }
+
+    public void update(Room room) {
+        entityManager.merge(room);
+    }
+
+    public void delete(Room room) {
+        entityManager.remove(room);
+    }
+
+    public List<Room> findAvailableRooms() {
+        return entityManager.createQuery("SELECT r FROM Room r WHERE r.isBooked = false", Room.class).getResultList();
+    }
+}
+
+
+Unit Test for RoomService (Using JUnit + Mockito)
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class RoomServiceTest {
+
+    @Mock
+    private RoomDAO roomDAO;
+
+    @InjectMocks
+    private RoomService roomService;
+
+    private Room room;
+
+    @BeforeEach
+    public void setUp() {
+        room = new Room(1, "Deluxe", false);
+    }
+
+    @Test
+    public void testBookRoomSuccess() {
+        // Arrange
+        when(roomDAO.findById(1)).thenReturn(room);
+
+        // Act
+        boolean result = roomService.bookRoom(1);
+
+        // Assert
+        assertTrue(result);
+        verify(roomDAO, times(1)).update(room);
+        assertTrue(room.isBooked());
+    }
+
+    @Test
+    public void testBookRoomFailureRoomAlreadyBooked() {
+        // Arrange
+        room.setBooked(true);
+        when(roomDAO.findById(1)).thenReturn(room);
+
+        // Act
+        boolean result = roomService.bookRoom(1);
+
+        // Assert
+        assertFalse(result);
+        verify(roomDAO, never()).update(room);
+    }
+
+    @Test
+    public void testCancelBookingSuccess() {
+        // Arrange
+        room.setBooked(true);
+        when(roomDAO.findById(1)).thenReturn(room);
+
+        // Act
+        boolean result = roomService.cancelBooking(1);
+
+        // Assert
+        assertTrue(result);
+        verify(roomDAO, times(1)).update(room);
+        assertFalse(room.isBooked());
+    }
+
+    @Test
+    public void testCancelBookingFailureRoomNotBooked() {
+        // Arrange
+        when(roomDAO.findById(1)).thenReturn(room);
+
+        // Act
+        boolean result = roomService.cancelBooking(1);
+
+        // Assert
+        assertFalse(result);
+        verify(roomDAO, never()).update(room);
+    }
+
+    @Test
+    public void testGetRoomDetails() {
+        // Arrange
+        when(roomDAO.findById(1)).thenReturn(room);
+
+        // Act
+        Room result = roomService.getRoomDetails(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+    }
+}
+
+
+Unit Test for RoomDAO (Using JUnit + Mockito)
+For testing RoomDAO, you'd typically mock your EntityManager and verify its interactions with the database.
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class RoomDAOTest {
+
+    @Mock
+    private EntityManager entityManager;
+
+    @InjectMocks
+    private RoomDAO roomDAO;
+
+    private Room room;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        room = new Room(1, "Deluxe", false);
+    }
+
+    @Test
+    public void testFindById() {
+        // Arrange
+        when(entityManager.find(Room.class, 1)).thenReturn(room);
+
+        // Act
+        Room result = roomDAO.findById(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+    }
+
+    @Test
+    public void testUpdateRoom() {
+        // Arrange
+        room.setBooked(true);
+        doNothing().when(entityManager).merge(room);
+
+        // Act
+        roomDAO.update(room);
+
+        // Assert
+        verify(entityManager, times(1)).merge(room);
+    }
+
+    @Test
+    public void testDeleteRoom() {
+        // Arrange
+        doNothing().when(entityManager).remove(room);
+
+        // Act
+        roomDAO.delete(room);
+
+        // Assert
+        verify(entityManager, times(1)).remove(room);
+    }
+
+    @Test
+    public void testFindAvailableRooms() {
+        // Arrange
+        List<Room> rooms = List.of(room);
+        Query query = mock(Query.class);
+        when(entityManager.createQuery("SELECT r FROM Room r WHERE r.isBooked = false", Room.class)).thenReturn(query);
+        when(query.getResultList()).thenReturn(rooms);
+
+        // Act
+        List<Room> availableRooms = roomDAO.findAvailableRooms();
+
+        // Assert
+        assertNotNull(availableRooms);
+        assertFalse(availableRooms.isEmpty());
+        assertEquals(1, availableRooms.size());
+    }
+}
+
+
+Summary of Unit Tests:
+1-Service Tests (RoomServiceTest):
+
+Ensure methods like bookRoom, cancelBooking, and getRoomDetails work as expected.
+Mock the DAO layer to focus on business logic.
+Use assertions to verify correct behavior and interactions with DAOs.
+
+2-DAO Tests (RoomDAOTest):
+
+Mock the EntityManager and ensure that the database operations (e.g., findById, update, delete) are performed correctly.
+Validate that correct queries are being run and results are returned.
