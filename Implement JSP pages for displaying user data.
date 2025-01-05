@@ -1,0 +1,304 @@
+To implement JSP pages for displaying user data in a web application, you can follow a structure 
+where the user information is passed from a Servlet to the JSP page, which then dynamically renders
+it in HTML format. 
+Below is a step-by-step example 
+demonstrating how to create a simple system to 
+display user data using JSP and Servlets.
+
+1. Create the User Model Class
+The User class will represent a user, containing properties such as id, name, email, and age.
+
+package com.example;
+
+public class User {
+    private int id;
+    private String name;
+    private String email;
+    private int age;
+
+    // Constructor
+    public User(int id, String name, String email, int age) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+
+2. Create the UserManager Class
+This class will simulate fetching user data from a database or service.
+
+package com.example;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserManager {
+    
+    // Method to get a list of users
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        
+        // Creating dummy users for demonstration
+        users.add(new User(1, "John Doe", "john.doe@example.com", 30));
+        users.add(new User(2, "Jane Smith", "jane.smith@example.com", 25));
+        users.add(new User(3, "Alice Johnson", "alice.johnson@example.com", 28));
+        
+        return users;
+    }
+}
+
+3. Create the UserServlet Class
+The UserServlet will handle requests from the client (browser), interact with UserManager, and forward the data to the JSP page for rendering.
+package com.example;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.List;
+
+public class UserServlet extends HttpServlet {
+    
+    private UserManager userManager;
+
+    public void init() {
+        userManager = new UserManager(); // Initialize the user manager
+    }
+
+    // Handle GET requests to display user data
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<User> users = userManager.getAllUsers(); // Fetch all users
+        request.setAttribute("users", users); // Set users as a request attribute
+
+        // Forward to the JSP page to display users
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/userList.jsp");
+        dispatcher.forward(request, response);
+    }
+}
+
+
+4. Create the userList.jsp Page
+This JSP page will receive the user data passed by the UserServlet and render it in an HTML table.
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>User List</title>
+</head>
+<body>
+    <h1>List of Users</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="user" items="${users}">
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.age}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+
+To implement JSP pages for displaying user data in a web application, you can follow a structure where the user information is passed from a Servlet to the JSP page, which then dynamically renders it in HTML format. Below is a step-by-step example demonstrating how to create a simple system to display user data using JSP and Servlets.
+
+1. Create the User Model Class
+The User class will represent a user, containing properties such as id, name, email, and age.
+
+java
+Copy code
+package com.example;
+
+public class User {
+    private int id;
+    private String name;
+    private String email;
+    private int age;
+
+    // Constructor
+    public User(int id, String name, String email, int age) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+2. Create the UserManager Class
+This class will simulate fetching user data from a database or service.
+
+java
+Copy code
+package com.example;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UserManager {
+    
+    // Method to get a list of users
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        
+        // Creating dummy users for demonstration
+        users.add(new User(1, "John Doe", "john.doe@example.com", 30));
+        users.add(new User(2, "Jane Smith", "jane.smith@example.com", 25));
+        users.add(new User(3, "Alice Johnson", "alice.johnson@example.com", 28));
+        
+        return users;
+    }
+}
+3. Create the UserServlet Class
+The UserServlet will handle requests from the client (browser), interact with UserManager, and forward the data to the JSP page for rendering.
+
+java
+Copy code
+package com.example;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.List;
+
+public class UserServlet extends HttpServlet {
+    
+    private UserManager userManager;
+
+    public void init() {
+        userManager = new UserManager(); // Initialize the user manager
+    }
+
+    // Handle GET requests to display user data
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<User> users = userManager.getAllUsers(); // Fetch all users
+        request.setAttribute("users", users); // Set users as a request attribute
+
+        // Forward to the JSP page to display users
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/userList.jsp");
+        dispatcher.forward(request, response);
+    }
+}
+4. Create the userList.jsp Page
+This JSP page will receive the user data passed by the UserServlet and render it in an HTML table.
+
+jsp
+Copy code
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>User List</title>
+</head>
+<body>
+    <h1>List of Users</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="user" items="${users}">
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.age}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</body>
+</html>
+5. Update web.xml for Servlet Mapping
+Make sure the web.xml file in the WEB-INF folder maps the servlet to a URL pattern.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <servlet>
+        <servlet-name>userServlet</servlet-name>
+        <servlet-class>com.example.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>userServlet</servlet-name>
+        <url-pattern>/UserServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+6. Install JSTL Library for <c:forEach>
+The c:forEach tag used in userList.jsp is part of the JSTL (JavaServer Pages Standard Tag Library). Ensure you add JSTL to your project if it is not already included.
+
+You can add the JSTL library by including it in your WEB-INF/lib folder:
+
+jstl-1.2.jar
+standard-1.1.2.jar
+
+Alternatively, you can add the JSTL dependencies if using Maven:
+
+<dependency>
+    <groupId>javax.servlet.jsp.jstl</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+7. Run the Application
+1-Compile the Java classes and deploy the project to a servlet container like Apache Tomcat.
+2-Run the application by accessing the servlet in the browser:
+http://localhost:8080/YourWebAppName/UserServlet
+This should display a list of users in an HTML table, which was passed from the UserServlet to the userList.jsp.
+
+Explanation of Flow:
+1-UserServlet receives the HTTP GET request and calls the UserManager to fetch a list of users.
+2-The servlet sets the list of users as a request attribute and forwards the request to userList.jsp.
+3-userList.jsp accesses the list of users from the request and uses the <c:forEach> tag to iterate over the list and display the user information in an HTML table.
+4-The JSTL <c:forEach> tag dynamically generates the rows for each user in the table.
+
+
+
+
+
