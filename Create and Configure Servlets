@@ -1,0 +1,565 @@
+Creating and configuring servlets for a hotel management project involves the following key steps:
+1-Setting up the Java Servlet Environment: To use servlets, ensure that you have a Java development 
+environment (like Eclipse or IntelliJ IDEA) set up with a servlet container, such as Apache Tomcat.
+2-Project Structure: The servlet files will typically be part of a WebApplication with the following structure:
+HotelManagement
+├── src
+│   └── com
+│       └── hotel
+│           └── servlet
+│               ├── AddBookingServlet.java
+│               └── ViewBookingServlet.java
+├── WebContent
+│   ├── WEB-INF
+│   │   └── web.xml
+│   ├── index.jsp
+│   ├── addBooking.jsp
+│   └── viewBooking.jsp
+└── lib
+3-Servlet Configuration in web.xml: You need to define the servlet in the web.xml file, which is typically located under WEB-INF.
+Example Servlet: AddBookingServlet.java
+This servlet would handle the logic for adding a booking for the hotel.
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+
+public class AddBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String customerName = request.getParameter("customerName");
+        String roomType = request.getParameter("roomType");
+        String checkInDate = request.getParameter("checkInDate");
+        String checkOutDate = request.getParameter("checkOutDate");
+
+        try {
+            // Create a connection to the database (replace with your own JDBC URL, username, and password)
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "INSERT INTO bookings (customer_name, room_type, check_in_date, check_out_date) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, roomType);
+            pstmt.setString(3, checkInDate);
+            pstmt.setString(4, checkOutDate);
+            
+            int result = pstmt.executeUpdate();
+            
+            if (result > 0) {
+                response.sendRedirect("viewBooking.jsp"); // Redirect to view bookings page
+            } else {
+                request.setAttribute("message", "Booking failed!");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("addBooking.jsp");
+                dispatcher.forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Example Servlet: ViewBookingServlet.java
+This servlet would fetch and display all bookings in the hotel.
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+import java.util.*;
+
+public class ViewBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<String> bookings = new ArrayList<>();
+        
+        try {
+            // Create a connection to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "SELECT * FROM bookings";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                String bookingDetails = rs.getInt("id") + " - " + rs.getString("customer_name") + " (" + rs.getString("room_type") + ")";
+                bookings.add(bookingDetails);
+            }
+            
+            request.setAttribute("bookings", bookings);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("viewBooking.jsp");
+            dispatcher.forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+web.xml Configuration
+In the WEB-INF/web.xml file, you need to configure these servlets so that they are mapped to URLs.
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <!-- Servlet mapping for AddBookingServlet -->
+    <servlet>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.AddBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <url-pattern>/addBooking</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet mapping for ViewBookingServlet -->
+    <servlet>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.ViewBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <url-pattern>/viewBooking</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
+Creating and configuring servlets for a hotel management project involves the following key steps:
+
+Setting up the Java Servlet Environment: To use servlets, ensure that you have a Java development environment (like Eclipse or IntelliJ IDEA) set up with a servlet container, such as Apache Tomcat.
+
+Project Structure: The servlet files will typically be part of a WebApplication with the following structure:
+
+css
+Copy code
+HotelManagement
+├── src
+│   └── com
+│       └── hotel
+│           └── servlet
+│               ├── AddBookingServlet.java
+│               └── ViewBookingServlet.java
+├── WebContent
+│   ├── WEB-INF
+│   │   └── web.xml
+│   ├── index.jsp
+│   ├── addBooking.jsp
+│   └── viewBooking.jsp
+└── lib
+Servlet Configuration in web.xml: You need to define the servlet in the web.xml file, which is typically located under WEB-INF.
+
+Example Servlet: AddBookingServlet.java
+This servlet would handle the logic for adding a booking for the hotel.
+
+java
+Copy code
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+
+public class AddBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String customerName = request.getParameter("customerName");
+        String roomType = request.getParameter("roomType");
+        String checkInDate = request.getParameter("checkInDate");
+        String checkOutDate = request.getParameter("checkOutDate");
+
+        try {
+            // Create a connection to the database (replace with your own JDBC URL, username, and password)
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "INSERT INTO bookings (customer_name, room_type, check_in_date, check_out_date) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, roomType);
+            pstmt.setString(3, checkInDate);
+            pstmt.setString(4, checkOutDate);
+            
+            int result = pstmt.executeUpdate();
+            
+            if (result > 0) {
+                response.sendRedirect("viewBooking.jsp"); // Redirect to view bookings page
+            } else {
+                request.setAttribute("message", "Booking failed!");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("addBooking.jsp");
+                dispatcher.forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Example Servlet: ViewBookingServlet.java
+This servlet would fetch and display all bookings in the hotel.
+
+java
+Copy code
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+import java.util.*;
+
+public class ViewBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<String> bookings = new ArrayList<>();
+        
+        try {
+            // Create a connection to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "SELECT * FROM bookings";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                String bookingDetails = rs.getInt("id") + " - " + rs.getString("customer_name") + " (" + rs.getString("room_type") + ")";
+                bookings.add(bookingDetails);
+            }
+            
+            request.setAttribute("bookings", bookings);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("viewBooking.jsp");
+            dispatcher.forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+web.xml Configuration
+In the WEB-INF/web.xml file, you need to configure these servlets so that they are mapped to URLs.
+
+xml
+Copy code
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <!-- Servlet mapping for AddBookingServlet -->
+    <servlet>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.AddBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <url-pattern>/addBooking</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet mapping for ViewBookingServlet -->
+    <servlet>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.ViewBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <url-pattern>/viewBooking</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+JSP Pages
+index.jsp (Home Page)<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Management System</title>
+</head>
+<body>
+    <h1>Welcome to the Hotel Management System</h1>
+    <a href="addBooking.jsp">Add Booking</a><br>
+    <a href="viewBooking">View Bookings</a>
+</body>
+</html>
+addBooking.jsp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Booking</title>
+</head>
+<body>
+    <h2>Add Booking</h2>
+    <form action="addBooking" method="POST">
+        Customer Name: <input type="text" name="customerName"><br>
+        Room Type: 
+        <select name="roomType">
+            <option value="Single">Single</option>
+            <option value="Double">Double</option>
+            <option value="Suite">Suite</option>
+        </select><br>
+        Check-in Date: <input type="date" name="checkInDate"><br>
+        Check-out Date: <input type="date" name="checkOutDate"><br>
+        <button type="submit">Add Booking</button>
+    </form>
+</body>
+</html>
+viewBooking.jsp
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Bookings</title>
+</head>
+<body>
+    <h2>All Bookings</h2>
+    <ul>
+        <% 
+            List<String> bookings = (List<String>) request.getAttribute("bookings");
+            for (String booking : bookings) {
+                out.println("<li>" + booking + "</li>");
+            }
+        %>
+    </ul>
+</body>
+</html>
+Database Setup
+The following SQL code can create a simple bookings table for storing booking information:
+CREATE DATABASE hotel_db;
+
+USE hotel_db;
+
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    room_type VARCHAR(50),
+    check_in_date DATE,
+    check_out_date DATE
+);
+
+
+
+
+Creating and configuring servlets for a hotel management project involves the following key steps:
+
+Setting up the Java Servlet Environment: To use servlets, ensure that you have a Java development environment (like Eclipse or IntelliJ IDEA) set up with a servlet container, such as Apache Tomcat.
+
+Project Structure: The servlet files will typically be part of a WebApplication with the following structure:
+
+css
+Copy code
+HotelManagement
+├── src
+│   └── com
+│       └── hotel
+│           └── servlet
+│               ├── AddBookingServlet.java
+│               └── ViewBookingServlet.java
+├── WebContent
+│   ├── WEB-INF
+│   │   └── web.xml
+│   ├── index.jsp
+│   ├── addBooking.jsp
+│   └── viewBooking.jsp
+└── lib
+Servlet Configuration in web.xml: You need to define the servlet in the web.xml file, which is typically located under WEB-INF.
+
+Example Servlet: AddBookingServlet.java
+This servlet would handle the logic for adding a booking for the hotel.
+
+java
+Copy code
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+
+public class AddBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String customerName = request.getParameter("customerName");
+        String roomType = request.getParameter("roomType");
+        String checkInDate = request.getParameter("checkInDate");
+        String checkOutDate = request.getParameter("checkOutDate");
+
+        try {
+            // Create a connection to the database (replace with your own JDBC URL, username, and password)
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "INSERT INTO bookings (customer_name, room_type, check_in_date, check_out_date) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, roomType);
+            pstmt.setString(3, checkInDate);
+            pstmt.setString(4, checkOutDate);
+            
+            int result = pstmt.executeUpdate();
+            
+            if (result > 0) {
+                response.sendRedirect("viewBooking.jsp"); // Redirect to view bookings page
+            } else {
+                request.setAttribute("message", "Booking failed!");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("addBooking.jsp");
+                dispatcher.forward(request, response);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+Example Servlet: ViewBookingServlet.java
+This servlet would fetch and display all bookings in the hotel.
+
+java
+Copy code
+package com.hotel.servlet;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+import java.util.*;
+
+public class ViewBookingServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<String> bookings = new ArrayList<>();
+        
+        try {
+            // Create a connection to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_db", "root", "password");
+            String query = "SELECT * FROM bookings";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                String bookingDetails = rs.getInt("id") + " - " + rs.getString("customer_name") + " (" + rs.getString("room_type") + ")";
+                bookings.add(bookingDetails);
+            }
+            
+            request.setAttribute("bookings", bookings);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("viewBooking.jsp");
+            dispatcher.forward(request, response);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+web.xml Configuration
+In the WEB-INF/web.xml file, you need to configure these servlets so that they are mapped to URLs.
+
+xml
+Copy code
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <!-- Servlet mapping for AddBookingServlet -->
+    <servlet>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.AddBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddBookingServlet</servlet-name>
+        <url-pattern>/addBooking</url-pattern>
+    </servlet-mapping>
+
+    <!-- Servlet mapping for ViewBookingServlet -->
+    <servlet>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <servlet-class>com.hotel.servlet.ViewBookingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewBookingServlet</servlet-name>
+        <url-pattern>/viewBooking</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+JSP Pages
+index.jsp (Home Page)
+jsp
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Management System</title>
+</head>
+<body>
+    <h1>Welcome to the Hotel Management System</h1>
+    <a href="addBooking.jsp">Add Booking</a><br>
+    <a href="viewBooking">View Bookings</a>
+</body>
+</html>
+addBooking.jsp
+jsp
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Booking</title>
+</head>
+<body>
+    <h2>Add Booking</h2>
+    <form action="addBooking" method="POST">
+        Customer Name: <input type="text" name="customerName"><br>
+        Room Type: 
+        <select name="roomType">
+            <option value="Single">Single</option>
+            <option value="Double">Double</option>
+            <option value="Suite">Suite</option>
+        </select><br>
+        Check-in Date: <input type="date" name="checkInDate"><br>
+        Check-out Date: <input type="date" name="checkOutDate"><br>
+        <button type="submit">Add Booking</button>
+    </form>
+</body>
+</html>
+viewBooking.jsp
+jsp
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Bookings</title>
+</head>
+<body>
+    <h2>All Bookings</h2>
+    <ul>
+        <% 
+            List<String> bookings = (List<String>) request.getAttribute("bookings");
+            for (String booking : bookings) {
+                out.println("<li>" + booking + "</li>");
+            }
+        %>
+    </ul>
+</body>
+</html>
+Database Setup
+The following SQL code can create a simple bookings table for storing booking information:
+
+sql
+Copy code
+CREATE DATABASE hotel_db;
+
+USE hotel_db;
+
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100),
+    room_type VARCHAR(50),
+    check_in_date DATE,
+    check_out_date DATE
+);
+Steps to Run:
+1-Database Configuration: Ensure your MySQL (or any other database) is set up and running.
+2-JDBC Connection: Modify your JDBC connection URL, username, and password as needed in the servlet code.
+3-Compile and Deploy: After writing and configuring your servlets, deploy them to your servlet container (e.g., Tomcat).
+4-Access URLs: You can now access:
+5-http://localhost:8080/HotelManagement/index.jsp for the home page.
+6-http://localhost:8080/HotelManagement/addBooking.jsp to add a new booking.
+7-http://localhost:8080/HotelManagement/viewBooking to view all bookings.
