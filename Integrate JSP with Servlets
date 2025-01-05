@@ -1,0 +1,306 @@
+Integrating JSP (JavaServer Pages) with Servlets in Java involves using Servlets to handle the 
+business logic (such as processing HTTP requests and interacting with data) while
+JSPs are used to render dynamic HTML content to the user. The general flow involves:
+
+1-Servlet processes client requests and may interact with databases or business logic.
+2-JSP renders the results of the Servlet (or data passed from the Servlet).
+
+Steps for Integrating JSP with Servlets
+Let's walk through a basic example where:
+
+1-A user submits a form through JSP (e.g., booking a room at a hotel).
+2-The Servlet processes the form submission (e.g., validating the booking or storing the booking data).
+3-The Servlet forwards the result to a JSP page for displaying the outcome (e.g., a confirmation page).
+
+
+Basic Project Structure
+
+HotelManagementApp
+│
+├── src
+│   ├── com.hotelmanagement
+│   │   ├── HotelServlet.java
+│   │   ├── HotelManager.java
+│   │   └── Room.java
+│
+├── WebContent
+│   ├── index.jsp
+│   ├── confirmation.jsp
+│   ├── WEB-INF
+│   └── web.xml
+│
+└── lib
+    └── servlet-api.jar
+
+Step 1: Create a Room Model Class
+This class represents the details of a room, including its number, type, price, and availability.
+
+package com.hotelmanagement;
+
+public class Room {
+    private int roomNumber;
+    private String roomType;
+    private boolean isAvailable;
+    private double price;
+
+    // Constructor
+    public Room(int roomNumber, String roomType, boolean isAvailable, double price) {
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.isAvailable = isAvailable;
+        this.price = price;
+    }
+
+    // Getters and Setters
+    public int getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(int roomNumber) { this.roomNumber = roomNumber; }
+
+    public String getRoomType() { return roomType; }
+    public void setRoomType(String roomType) { this.roomType = roomType; }
+
+    public boolean isAvailable() { return isAvailable; }
+    public void setAvailable(boolean isAvailable) { this.isAvailable = isAvailable; }
+
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+}
+
+
+Integrating JSP (JavaServer Pages) with Servlets in Java involves using Servlets to handle the business logic (such as processing HTTP requests and interacting with data) while JSPs are used to render dynamic HTML content to the user. The general flow involves:
+
+Servlet processes client requests and may interact with databases or business logic.
+JSP renders the results of the Servlet (or data passed from the Servlet).
+Steps for Integrating JSP with Servlets
+Let's walk through a basic example where:
+
+A user submits a form through JSP (e.g., booking a room at a hotel).
+The Servlet processes the form submission (e.g., validating the booking or storing the booking data).
+The Servlet forwards the result to a JSP page for displaying the outcome (e.g., a confirmation page).
+Basic Project Structure
+css
+Copy code
+HotelManagementApp
+│
+├── src
+│   ├── com.hotelmanagement
+│   │   ├── HotelServlet.java
+│   │   ├── HotelManager.java
+│   │   └── Room.java
+│
+├── WebContent
+│   ├── index.jsp
+│   ├── confirmation.jsp
+│   ├── WEB-INF
+│   └── web.xml
+│
+└── lib
+    └── servlet-api.jar
+Step 1: Create a Room Model Class
+This class represents the details of a room, including its number, type, price, and availability.
+
+java
+Copy code
+package com.hotelmanagement;
+
+public class Room {
+    private int roomNumber;
+    private String roomType;
+    private boolean isAvailable;
+    private double price;
+
+    // Constructor
+    public Room(int roomNumber, String roomType, boolean isAvailable, double price) {
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.isAvailable = isAvailable;
+        this.price = price;
+    }
+
+    // Getters and Setters
+    public int getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(int roomNumber) { this.roomNumber = roomNumber; }
+
+    public String getRoomType() { return roomType; }
+    public void setRoomType(String roomType) { this.roomType = roomType; }
+
+    public boolean isAvailable() { return isAvailable; }
+    public void setAvailable(boolean isAvailable) { this.isAvailable = isAvailable; }
+
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+}
+Step 2: Create a HotelManager Class
+This class will manage room availability and bookings.
+
+package com.hotelmanagement;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HotelManager {
+    private List<Room> rooms;
+
+    // Constructor initializing rooms
+    public HotelManager() {
+        rooms = new ArrayList<>();
+        rooms.add(new Room(101, "Single", true, 100.0));
+        rooms.add(new Room(102, "Double", true, 150.0));
+        rooms.add(new Room(103, "Suite", true, 300.0));
+    }
+
+    // Get list of available rooms
+    public List<Room> getAvailableRooms() {
+        List<Room> availableRooms = new ArrayList<>();
+        for (Room room : rooms) {
+            if (room.isAvailable()) {
+                availableRooms.add(room);
+            }
+        }
+        return availableRooms;
+    }
+
+    // Book a room by its room number
+    public boolean bookRoom(int roomNumber) {
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == roomNumber && room.isAvailable()) {
+                room.setAvailable(false); // Mark as booked
+                return true;
+            }
+        }
+        return false; // Room not available
+    }
+}
+
+Step 3: Create the HotelServlet Class
+The HotelServlet will handle HTTP requests, interact with HotelManager to get available rooms or process bookings, 
+and forward the result to a JSP for rendering.
+
+package com.hotelmanagement;
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.util.List;
+
+public class HotelServlet extends HttpServlet {
+    private HotelManager hotelManager;
+
+    public void init() {
+        hotelManager = new HotelManager();
+    }
+
+    // Handle GET requests (Display available rooms)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Room> availableRooms = hotelManager.getAvailableRooms();
+        request.setAttribute("availableRooms", availableRooms);  // Set available rooms as request attribute
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    // Handle POST requests (Book a room)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));  // Get room number from request
+        boolean success = hotelManager.bookRoom(roomNumber);  // Try to book the room
+        if (success) {
+            request.setAttribute("message", "Room " + roomNumber + " booked successfully.");
+        } else {
+            request.setAttribute("message", "Room " + roomNumber + " is not available.");
+        }
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmation.jsp");
+        dispatcher.forward(request, response);  // Forward to confirmation JSP
+    }
+}
+
+
+Step 4: Create the index.jsp (Form to Display Available Rooms)
+This page will display available rooms and allow users to book a room.
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Hotel Management - Available Rooms</title>
+</head>
+<body>
+    <h1>Available Rooms</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Room Number</th>
+                <th>Room Type</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="room" items="${availableRooms}">
+                <tr>
+                    <td>${room.roomNumber}</td>
+                    <td>${room.roomType}</td>
+                    <td>${room.price}</td>
+                    <td>
+                        <form action="HotelServlet" method="post">
+                            <input type="hidden" name="roomNumber" value="${room.roomNumber}"/>
+                            <input type="submit" value="Book Now"/>
+                        </form>
+                    </td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+Step 5: Create the confirmation.jsp (Booking Confirmation)
+This page will show whether the room booking was successful.
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Booking Confirmation</title>
+</head>
+<body>
+    <h1>${message}</h1>
+    <a href="HotelServlet">Back to Available Rooms</a>
+</body>
+</html>
+
+Step 6: Configure the web.xml File
+This XML configuration file maps the HotelServlet to a specific URL pattern.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+                             http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <servlet>
+        <servlet-name>hotelServlet</servlet-name>
+        <servlet-class>com.hotelmanagement.HotelServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>hotelServlet</servlet-name>
+        <url-pattern>/HotelServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+Step 7: Running the Application
+1-Compile all the Java files and deploy the application to a servlet container like Tomcat.
+2-Run the application by accessing http://localhost:8080/HotelManagementApp/HotelServlet in a browser.
+
+Flow:
+1-User visits HotelServlet (via a GET request), which retrieves the available rooms and forwards the request to index.jsp.
+2-User selects a room to book by submitting a form.
+3-The Servlet processes the booking request, updates room availability, and forwards the result to confirmation.jsp.
+4-confirmation.jsp displays the booking confirmation message.
+
+
+Conclusion:
+This basic integration of Servlets and JSPs demonstrates how Servlets can handle the logic 
+(getting available rooms, booking rooms) while JSPs are responsible for presenting dynamic 
+content to the user. This is a simple hotel management system that you can expand with 
+additional features like customer management, payment processing, etc.
+
+
+
